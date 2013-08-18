@@ -1,0 +1,425 @@
+<!DOCTYPE html PUBdivC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<style type="text/css">
+	body {width: 1000; border: 1px sodivd #fff; padding: 0px;font-family:HP Simpdivfied;}
+    div { margin: 0px;font-family:HP Simpdivfied;}
+    h1, h2, p {padding: 0px; margin: 0px;font-family:HP Simpdivfied;}
+	#banner-style {background: #FFFFFF;font-family:HP Simpdivfied;}
+	#title-style {background: #FFFFFF;font-family:HP Simpdivfied;}
+	#subtitle-style {background: #FFFFFF;font-family:HP Simpdivfied;}
+	#primary-style {background: #FFFFFF;font-family:HP Simpdivfied;}
+	#footer-style {background: #FFFFFF;font-family:HP Simpdivfied;}
+	
+	.active
+    {
+       background-color: #98AFC7 !important;
+    }
+	
+	li{
+	  list-style:none;
+	/*  background-color:lightgrey; */
+	  margin: 2px;
+	  
+	}
+	
+	ol{
+	  margin:2px;
+	}
+	
+	.ui-sortable-placeholder {
+			outline: 1px dashed #4183C4;
+			visibility:visible !important;
+			/*-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			border-radius: 3px;
+			margin: -1px;*/
+		}
+
+		.mjs-nestedSortable-error {
+			background: #fbe3e4;
+			border-color: transparent;
+		}
+	
+</style>
+
+<title>Demo</title>
+   
+        <!--[if IE 7]><style type="text/css">#v-nav>ul>div.current{border-right:1px sodivd #fff!important}#v-nav>div.tab-content{z-index:-1!important;left:0}</style><![endif]-->
+        <!--[if IE 8]><style type="text/css">#v-nav>ul>div.current{border-right:1px sodivd #fff!important}#v-nav>div.tab-content{z-index:-1!important;left:0}</style><![endif]-->
+        
+		<divnk rel="stylesheet" href="js/jquery-ui.css">
+  		<script src="js/jquery-1.js"></script>
+  		<script src="js/jquery-ui.js"></script>
+		
+		<script src="js/jquery.mjs.nestedSortable.js" type="text/javascript"></script>
+		
+		 <script type="text/javascript">
+		//global variable
+		  var stack_list = []
+		  var flag = false;
+		  var drag_initiated_container;
+    	  
+		  function list_selection(){
+		      $('.sortable li').unbind('click').bind('click', function(event) {
+
+		          if (flag) {
+		              if (typeof ($(this).attr('class')) != 'undefined') {
+		                  var aryClass = $(this).attr('class').split(' ')
+		                  if ($.inArray("active", aryClass) != -1) {
+
+		                      var indexVal = $(stack_list).index($(this));
+		                      stack_list.splice(indexVal, 1);
+		                  } else {
+		                      stack_list.push($(this))
+		                  }
+		              } else {
+		                  stack_list.push($(this))
+		              }
+		              $(this).toggleClass('active');
+
+
+		          } else {
+		              $.each(stack_list, function(index, UIObj) {
+		                  $(UIObj).removeClass('active');
+		              })
+		              stack_list = [];
+		              $(stack_list).empty();
+		              $(this).toggleClass('active');
+		              stack_list.push($(this))
+
+		          }
+		          
+		             return false;
+		      })
+
+		  }
+	      
+		  
+		  function bind_to_show_formatecode(){
+			  $('#concat-list  div').mouseout(function(){
+	        		$(this).find('span').css('display','none')
+	        	}).mouseover(function(){
+	        		$(this).find('span').css('display','')
+	        	})  
+			  $('#list2  div').mouseout(function(){
+	        		$(this).find('span').css('display','none')
+	        	}).mouseover(function(){
+	        		$(this).find('span').css('display','')
+	        	})
+	        	
+	        	$('#list1 div').unbind('mouseover')
+		  }
+		  
+		  $(document).ready(function(){
+	          $(document).keydown(function(event) {
+		          if (event.which == 17) {
+		              flag = true
+		          }
+
+		      })
+
+		      $(document).keyup(function(event) {
+		          if (event.which == 17) {
+		              flag = false
+		          }
+
+		      })
+			
+		      
+		      
+               list_selection();
+
+	    		$('.sortable').nestedSortable({
+	    			handle: 'div',
+	    			items: 'li',
+	    			toleranceElement: '> div',
+	    			start:function(event,ui){
+	    				//return false;
+	    				drag_initiated_container = $(ui.item.parent()).attr('id');
+	    				$('.ui-sortable-placeholder').removeClass('active')
+	    				
+	    				$('.sortable li').unbind('click');
+	    				
+	    			},
+	    			update:function(){
+	    				
+	    				//alert('updated');
+	    				if($('#list2 li').length ==0){		
+    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+    							$('#list2').append(tempHtml);
+    					}
+    					
+    					if($('#concat-list li').length ==0){		
+    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+    							$('#concat-list').append(tempHtml);
+    					}
+    					
+	    			},
+	    				
+	    			stop: function( event, ui ) {
+	    				// alert("dropped");
+	    				
+	    				    //if (!e) var e = window.event;
+						//event.preventDefault()
+	    				$(ui.item).removeClass('active');
+	    				
+	    				switch($($(ui.item)[0].parentNode).attr('id')){
+	    				
+	    				case 'list1':
+							if($(ui.item).find('ol').length >0){	
+	    						
+		    						$.each($(ui.item).find('li'),function(index,UIObj){
+		    							if($.inArray("concat-items",$(UIObj).attr('class').split(' ')) == -1){
+		    							$($(ui.item)[0].parentNode).append($(UIObj).attr('class','mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf'))
+		    							$(ui.item).attr('class','mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf');
+		    							}else{
+		    								$(UIObj).remove();
+		    							}
+		    						})
+		    						
+		    					}else{
+		    						
+		    						//check for dummy Items
+		    						if($.inArray($(ui.item).attr('class').split(' '),'dummyItem') != -1){
+			    						$(ui.item).remove();
+			    					}
+		    						
+		    						if($.inArray("concat-items",$(ui.item).attr('class').split(' ')) == -1){
+		    							// add class attribute as leaf nodes so no other items to drop/ have child.
+			    						$(ui.item).attr('class','mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf');
+			    							
+		    						}else{
+		    							$(ui.item).remove();
+		    						}
+		    						
+		    						
+	    					     }
+							
+							if($('#list2 li').length ==0){		
+	    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+	    							$('#list2').append(tempHtml);
+	    						}
+							if($('#concat-list li').length ==0){		
+	    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+	    							$('#concat-list').append(tempHtml);
+	    					}
+							
+	    					break
+	    				case 'list2':
+	    					
+	    					var classList = $(ui.item).attr('class').split(' ');
+	    					if($.inArray("dummyItem",classList) == -1){
+	    					   if($.inArray("concat-items",classList) == -1){
+	    						   $(ui.item).attr('class', '');
+	    					   }else{
+	    						   $(ui.item).attr('class', 'concat-items');
+	    					   }
+	    					}
+	    					
+							$.each(stack_list,function(index,UIObj){
+								classList = $(UIObj).attr('class').split(' ');
+								if($.inArray("concat-items",classList) == -1){
+		    						   $(UIObj).attr('class', '');
+		    					   }else{
+		    						   $(UIObj).attr('class', 'concat-items');
+		    					   }
+								$('#list2').append($(UIObj));
+	    					})
+	    					
+	    					if($('#concat-list li').length ==0){		
+	    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+	    							$('#concat-list').append(tempHtml);
+	    					}
+							
+							if($('#list2 li').length ==0){		
+	    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+	    							$('#list2').append(tempHtml);
+	    					}
+	    					break;
+	    				case 'concat-list':
+	    					var temp_ary = $(ui.item).find('div.container-item')
+							$.each(temp_ary,function(Inx,UI_Obj){
+								var class_list = $($(UI_Obj)[0].parentNode).attr('class').split(' ');
+								//console.log($($(UI_Obj)[0].parentNode).attr('class'));
+								   if($.inArray("concat-items",class_list) == -1){
+									   var tml_txt = '<li class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class="container-item">'+$(UI_Obj)[0].innerHTML+'</div></li>';
+									$('#list1').append(tml_txt)
+									//.append($(UI_Obj).clone())
+								   }
+							})
+	    				    $(ui.item).addClass('concat-items')  // adding the class to different from the rest of the list.
+	    				    //$(ui.item).find('div label').remove();
+	    			       // below code is used to copy Items to list 
+	    				    //if(drag_initiated_container == "list1"){
+	    						//$('#list1').append($(ui.item).removeClass('active').clone());
+	    						
+	    				    	
+    							
+	    					//}
+	    				    
+	    				    
+	    				    var temp_list = []
+	    				    $.each(stack_list , function(index,item){
+	    				    	
+	    				    	if($(ui.item).attr('id') != $(item).attr('id')){
+	    				    		temp_list.push(item)
+	    				    	}
+	    				    	
+	    				    })
+	    					
+	    				    stack_list = temp_list;
+	    				    
+	    				   if($(ui.item).find('ol').length >0){
+		    					$(ui.item).find('div label').remove();
+					    		var inner_divs = $(ui.item).find('.container-item')
+					    		var inner_divs_count = $(ui.item).find('.container-item').length
+								$.each(inner_divs,function(INX,DivItems){
+									var label_text = '<label>+</label>';
+									if(INX == inner_divs_count-1  ){
+										label_text = ''
+									}					    		 			
+				    		 		$(ui.item).append($(DivItems).append(label_text));	
+								})
+	    				    }else{
+	    				    	
+	    				    }
+	    					
+	    	     	    	 if(stack_list.length >0){
+	    	    			   $(ui.item).find('div:last').append('<label>+</label>')
+	    	   				 }
+	 			 	    				    
+
+	    					
+	    					//Todo : No need to clone and append the items with "concat" class - addressed.  
+	    					$.each(stack_list,function(index,UIObj){
+	    						//if(drag_initiated_container == "list1"){
+	    							
+	    							var temp_ary = $(UIObj).find('div.container-item')
+	    							$.each(temp_ary,function(Inx,UI_Obj){
+	    								var class_list = $($(UI_Obj)[0].parentNode).attr('class').split(' ');
+	    								//console.log($($(UI_Obj)[0].parentNode).attr('class'));
+	    								   if($.inArray("concat-items",class_list) == -1){
+	    									   
+	    									$('#list1').append('<li class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class="container-item">'+$(UI_Obj)[0].innerHTML+'</div></li>')
+	    											
+	    								   }
+	    							})
+	    							
+	    							
+    				    			
+    				    		//}
+    				    		
+
+	    				    		$(UIObj).find('div label').remove();
+	    				    		var inner_divs = $(UIObj).find('.container-item')
+						    		var inner_divs_count = $(UIObj).find('.container-item').length
+									$.each(inner_divs,function(INX,DivItems){
+										var label_text = '<label>+</label>';
+										if(INX == inner_divs_count-1 && index == stack_list.length-1  ){
+											label_text = ''
+										}					    		 			
+					    		 		$(ui.item).append($(DivItems).append(label_text));	
+									})
+	   					})
+	    					
+	    					$.each($('ol li'),function(index,UIObject){
+	    						if($(UIObject).find('div').length == 0){
+	    							$(UIObject).remove();
+	    						}
+	    						
+	    						if($.inArray("dummyItem",$(UIObject).attr('class').split(' ')) != -1){
+	    							if($($(UIObject)[0].parentNode).find('li').length > 1){
+	    							$(UIObject).remove();
+	    					        }
+	    						}
+	    					})
+	    					stack_list = [];
+	    					
+	    					break
+	    				}
+	    				 
+	    				if($('#list2 li').length ==0){		
+    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+    							$('#list2').append(tempHtml);
+    					}
+    					
+    					if($('#concat-list li').length ==0){		
+    						var tempHtml = '<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>'	
+    							$('#concat-list').append(tempHtml);
+    					}
+    					
+	    				list_selection();
+	    				bind_to_show_formatecode();
+	    			 }
+
+	    		});
+
+	    	});
+	        
+		  
+		  function find_and_append_subchild(UIComponent){
+		  if($(UIComponent).find('ol').length >0){	
+				
+				return $(UIComponent).find('li');
+				
+			}else{
+				return UIComponent
+			}
+		}
+	    
+		</script>
+	
+
+</head>
+<body>
+<table>
+	<tr>
+		<td style="width:300px;float:left;text-align:center;font-weight:bold;"> 
+		  Default containers
+		</td>
+		<td style=" width:300px;float:left;text-align:center;font-weight:bold;">
+		  Composite Items
+		</td>
+		<td style="width:300px;float:left;text-align:center;font-weight:bold;">
+		  Result/final 
+		</td>
+	</tr>
+</table>
+<ol class="sortable" style="list-style:none;">
+<ol  id = "list1" style="border:1px solid; width:250px;float:left;">
+	<!-- <li class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div>Some content</div></li>
+	<li>
+		<div>Some content</div>
+		<ol>
+			<li><div>Some sub-item content</div></li>
+			<li><div>Some sub-item content</div></li>
+		</ol>
+	</li>
+	<li><div>Some content</div></li>
+	 -->
+	 
+	 <li id = "1" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item" > Processor <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "2" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> Mouse<span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "3" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> Keyboard <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "4" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> Monitor <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "5" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> PC <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "6" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> OS<span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "7" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> MAC <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "8" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> Windows <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+	 <li id = "9" class="mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf"><div class= "container-item"> Linux <span style="display:none;"><select><option value="A">A</option><option value="A">B</option><option value="A">C</option></select></span></div></li>
+</ol>	
+<ol id = "concat-list" style="border:1px solid;width:250px;float:left;" >
+  <li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>
+</ol>
+<ol id = "list2" style="border:1px solid;width:250px;float:left;" >
+	<li class="ui-state-default ui-state-disabled mjs-nestedSortable-no-nesting mjs-nestedSortable-leaf dummyItem" ><div>&nbsp; </div></li>
+
+	
+</ol>
+</ol>              
+	
+
+
+</body></html>
